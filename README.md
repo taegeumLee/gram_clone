@@ -1,37 +1,66 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Taegram Clone
 
-## Getting Started
+## 소개
 
-First, run the development server:
+Taegram은 소셜 네트워킹 서비스의 클론 프로젝트입니다.
+
+## 기술 스택
+
+- Next.js 14
+- TypeScript
+- Tailwind CSS
+- Prisma
+- Framer Motion
+
+## 주요 기능
+
+- 전화번호 인증을 통한 회원가입
+- 약관 동의
+- 기본 정보 입력
+- 반응형 UI
+- 애니메이션 효과
+
+## 시작하기
+
+### 필수 조건
+
+- Node.js 18.0.0 이상
+- npm 또는 yarn
+
+### 설치
+
+```bash
+# 저장소 클론
+git clone https://github.com/your
+```
+
+### 개발 서버 실행
 
 ```bash
 npm run dev
-# or
+# 또는
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+브라우저에서 http://localhost:3000 으로 접속하여 결과를 확인할 수 있습니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 프로젝트 구조
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```
+gram_clone/
+├── app/
+│   ├── (auth)/
+│   │   ├── components/
+│   │   ├── signUp/
+│   │   └── page.tsx
+│   ├── fonts/
+│   ├── globals.css
+│   └── layout.tsx
+├── public/
+│   └── images/
+└── package.json
+```
 
-## Learn More
+## 라이선스
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-# gram_clone
+이 프로젝트는 MIT 라이선스를 따릅니다.
