@@ -13,7 +13,7 @@ interface AuthModalProps {
 export default function AuthModal() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   return (
-    <>
+    <div className="relative z-10 w-full p-2 space-y-3 max-w-md mx-auto mb-10 ">
       <button
         onClick={() => setIsModalOpen(true)}
         className="w-full text-white py-3 hover:bg-white/10 transition-colors rounded-lg"
@@ -21,7 +21,7 @@ export default function AuthModal() {
         다른 방법으로 계속하기
       </button>
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-    </>
+    </div>
   );
 }
 
@@ -42,7 +42,7 @@ function Modal({ isOpen, onClose }: AuthModalProps) {
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 40, stiffness: 500 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full bg-white rounded-t-2xl p-4 space-y-4"
+            className="w-full bg-white rounded-t-2xl p-4 space-y-4 "
           >
             <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-6" />
 
@@ -50,7 +50,7 @@ function Modal({ isOpen, onClose }: AuthModalProps) {
               다른 방법으로 계속하기
             </h2>
 
-            <button className="w-full bg-sky-400 hover:bg-sky-500 transition-colors text-white py-3 rounded-lg font-medium">
+            <button className="w-full bg-sky-500 hover:bg-sky-600 transition-colors text-white py-3 rounded-lg font-medium">
               전화번호로 계속하기
             </button>
 
@@ -67,8 +67,8 @@ function Modal({ isOpen, onClose }: AuthModalProps) {
             <p className="text-center text-gray-500 text-sm mt-4">
               계정을 잊으셨나요?{" "}
               <Link
-                href="/"
-                className="text-sky-400 font-bold hover:underline underline-offset-4"
+                href="/find-password"
+                className="text-sky-500 font-bold hover:underline underline-offset-4"
               >
                 비밀번호 찾기
               </Link>

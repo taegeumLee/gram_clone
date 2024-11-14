@@ -30,6 +30,8 @@ export default function BackgroundSlider() {
         fill
         className="object-cover brightness-[0.7]"
         priority
+        quality={75}
+        loading="eager"
       />
     </motion.div>
   );
