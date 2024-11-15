@@ -1,6 +1,6 @@
 import Link from "next/link";
-import AuthModal from "./components/AuthModal";
-import BackgroundSlider from "./components/BackgroundSlider";
+import AuthModal from "./(auth)/components/AuthModal";
+import BackgroundSlider from "./(auth)/components/BackgroundSlider";
 export default function Home() {
   return (
     <div className="h-screen w-full relative flex flex-col items-center justify-between">

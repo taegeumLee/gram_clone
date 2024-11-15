@@ -6,12 +6,14 @@ import Phone from "./phone";
 import Verification from "./verification";
 import Terms from "./terms";
 import BasicInfo from "./basicInfo";
-
+import Birth from "./birth";
+import Location from "./location";
 type SignUpStep =
   | "phone"
   | "verification"
   | "terms"
   | "basic"
+  | "birth"
   | "location"
   | "physical"
   | "background"
@@ -47,7 +49,13 @@ export default function SignUpForm() {
           <Terms onNext={() => setCurrentStep("basic")} />
         )}
         {currentStep === "basic" && (
-          <BasicInfo onNext={() => setCurrentStep("location")} />
+          <BasicInfo onNext={() => setCurrentStep("birth")} />
+        )}
+        {currentStep === "birth" && (
+          <Birth onNext={() => setCurrentStep("location")} />
+        )}
+        {currentStep === "location" && (
+          <Location onNext={() => setCurrentStep("physical")} />
         )}
       </AnimatePresence>
     </div>

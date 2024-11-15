@@ -4,6 +4,22 @@ import { useState } from "react";
 import Link from "next/link";
 
 export default function Terms({ onNext }: { onNext: () => void }) {
+  const termsList = [
+    { id: "service", label: "이용약관 동의", required: true },
+    {
+      id: "privacy",
+      label: "개인정보 수집 및 이용 동의",
+      required: true,
+    },
+    { id: "age", label: "위치정보 이용약관 동의", required: true },
+    { id: "marketing", label: "마케팅 수신 동의", required: false },
+    {
+      id: "notification",
+      label: "민감정보 이용 동의",
+      required: false,
+    },
+  ];
+
   const [agreements, setAgreements] = useState({
     service: false,
     privacy: false,
@@ -65,27 +81,13 @@ export default function Terms({ onNext }: { onNext: () => void }) {
               type="checkbox"
               checked={isAllChecked}
               onChange={handleCheckAll}
-              className="w-7 h-7 accent-white bg-white hover:bg-white"
+              className="w-6 h-6 accent-white bg-white hover:bg-white"
             />
           </label>
 
           <div className="h-px bg-gray-200 my-4" />
 
-          {[
-            { id: "service", label: "이용약관 동의", required: true },
-            {
-              id: "privacy",
-              label: "개인정보 수집 및 이용 동의",
-              required: true,
-            },
-            { id: "age", label: "위치정보 이용약관 동의", required: true },
-            { id: "marketing", label: "마케팅 수신 동의", required: false },
-            {
-              id: "notification",
-              label: "민감정보 이용 동의",
-              required: false,
-            },
-          ].map((item) => (
+          {termsList.map((item) => (
             <label
               key={item.id}
               className="flex items-center justify-between gap-3"
