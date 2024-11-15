@@ -1,11 +1,45 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { IoLocationOutline, IoSearch } from "react-icons/io5";
-import { Map, MapMarker } from "react-kakao-maps-sdk";
+
+interface Location {
+  latitude: number;
+  longitude: number;
+}
+
+interface KakaoPlace {
+  y: string;
+  x: string;
+  place_name: string;
+  address_name: string;
+}
+
+import dynamic from "next/dynamic";
+
+const KakaoMap = dynamic(
+  async () => {
+    const { Map } = await import("react-kakao-maps-sdk");
+    return Map;
+  },
+  {
+    ssr: false,
+    loading: () => <div>지도를 불러오는 중...</div>,
+  }
+);
+
+const KakaoMapMarker = dynamic(
+  async () => {
+    const { MapMarker } = await import("react-kakao-maps-sdk");
+    return MapMarker;
+  },
+  {
+    ssr: false,
+  }
+);
 
 interface LocationProps {
-  onNext: () => void;
+  onNext: (location: Location) => void;
 }
 
 declare global {
@@ -13,89 +47,85 @@ declare global {
     kakao: any;
   }
 }
-
 export default function Location({ onNext }: LocationProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [currentLocation, setCurrentLocation] = useState<{
-    latitude: number;
-    longitude: number;
-  } | null>(null);
+  const [currentLocation, setCurrentLocation] = useState<Location | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isMapReady, setIsMapReady] = useState(false);
+  const [places, setPlaces] = useState<KakaoPlace[]>([]);
 
-  const getCurrentLocation = () => {
+  const handleError = (message: string) => {
+    console.error(message);
+    alert(message);
+    setIsLoading(false);
+  };
+
+  const getCurrentLocation = async () => {
     setIsLoading(true);
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setCurrentLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-          setIsLoading(false);
-        },
-        (error) => {
-          console.error("위치 정보 오류:", error.message);
-          alert("위치 정보를 가져오는데 실패했습니다.");
-          setIsLoading(false);
+    try {
+      if (!("geolocation" in navigator)) {
+        throw new Error("이 브라우저에서는 위치 정보를 사용할 수 없습니다.");
+      }
+
+      const position = await new Promise<GeolocationPosition>(
+        (resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
         }
       );
-    } else {
-      alert("이 브라우저에서는 위치 정보를 사용할 수 없습니다.");
+
+      setCurrentLocation({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+      });
+    } catch (error) {
+      handleError("위치 정보를 가져오는데 실패했습니다.");
+    } finally {
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    let isSubscribed = true;
+  const searchPlaces = useCallback(() => {
+    if (!searchQuery.trim()) return;
 
-    const loadKakaoMap = async () => {
-      try {
-        if (!window.kakao) {
-          const script = document.createElement("script");
-          script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_APP_KEY}&libraries=services&autoload=false`;
-          script.async = true;
-
-          const onScriptLoad = () => {
-            if (isSubscribed) {
-              window.kakao.maps.load(() => {
-                if (isSubscribed) {
-                  setIsMapReady(true);
-                  getCurrentLocation();
-                }
-              });
-            }
-          };
-
-          script.addEventListener("load", onScriptLoad);
-          document.head.appendChild(script);
-
-          return () => {
-            script.removeEventListener("load", onScriptLoad);
-            if (document.head.contains(script)) {
-              document.head.removeChild(script);
-            }
-          };
-        } else {
-          // 이미 카카오맵 SDK가 로드된 경우
-          window.kakao.maps.load(() => {
-            if (isSubscribed) {
-              setIsMapReady(true);
-              getCurrentLocation();
-            }
-          });
-        }
-      } catch (error) {
-        console.error("카카오맵 로드 실패:", error);
+    const ps = new window.kakao.maps.services.Places();
+    ps.keywordSearch(searchQuery, (data: KakaoPlace[], status: any) => {
+      if (status === window.kakao.maps.services.Status.OK && data[0]) {
+        setPlaces(data);
+        setCurrentLocation({
+          latitude: Number(data[0].y),
+          longitude: Number(data[0].x),
+        });
       }
+    });
+  }, [searchQuery]);
+
+  const initializeKakaoMap = useCallback(() => {
+    const script = document.createElement("script");
+    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${process.env.NEXT_PUBLIC_KAKAO_MAP_APP_KEY}&libraries=services&autoload=false`;
+    script.async = true;
+
+    script.onload = () => {
+      window.kakao.maps.load(() => {
+        setIsMapReady(true);
+        getCurrentLocation();
+      });
     };
 
-    loadKakaoMap();
-
+    document.head.appendChild(script);
     return () => {
-      isSubscribed = false;
+      document.head.removeChild(script);
     };
   }, []);
+
+  useEffect(() => {
+    return initializeKakaoMap();
+  }, [initializeKakaoMap]);
+
+  const handleNext = () => {
+    if (currentLocation) {
+      onNext(currentLocation);
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen w-full p-6 bg-white">
@@ -114,6 +144,7 @@ export default function Location({ onNext }: LocationProps) {
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && searchPlaces()}
           placeholder="서울광역시 강남구"
           className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl
             focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:outline-none
@@ -136,7 +167,7 @@ export default function Location({ onNext }: LocationProps) {
       {/* 지도 영역 */}
       <div className="flex-1 rounded-xl mb-6 overflow-hidden bg-gray-100">
         {isMapReady && currentLocation ? (
-          <Map
+          <KakaoMap
             center={{
               lat: currentLocation.latitude,
               lng: currentLocation.longitude,
@@ -148,14 +179,14 @@ export default function Location({ onNext }: LocationProps) {
             level={3}
           >
             {currentLocation && (
-              <MapMarker
+              <KakaoMapMarker
                 position={{
                   lat: currentLocation.latitude,
                   lng: currentLocation.longitude,
                 }}
               />
             )}
-          </Map>
+          </KakaoMap>
         ) : (
           <div>지도를 불러오는 중...</div>
         )}
@@ -163,7 +194,7 @@ export default function Location({ onNext }: LocationProps) {
 
       {/* 다음 버튼 */}
       <button
-        onClick={onNext}
+        onClick={handleNext}
         disabled={!currentLocation && !searchQuery}
         className={`w-full p-4 rounded-xl font-medium transition-all
           ${

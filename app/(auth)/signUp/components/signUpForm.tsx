@@ -2,12 +2,14 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import Phone from "./phone";
-import Verification from "./verification";
-import Terms from "./terms";
-import BasicInfo from "./basicInfo";
-import Birth from "./birth";
-import Location from "./location";
+import dynamic from "next/dynamic";
+const Phone = dynamic(() => import("./phone"), { ssr: false });
+const Verification = dynamic(() => import("./verification"), { ssr: false });
+const Terms = dynamic(() => import("./terms"), { ssr: false });
+const BasicInfo = dynamic(() => import("./basicInfo"), { ssr: false });
+const Birth = dynamic(() => import("./birth"), { ssr: false });
+const Location = dynamic(() => import("./location"), { ssr: false });
+
 type SignUpStep =
   | "phone"
   | "verification"
@@ -25,7 +27,7 @@ type SignUpStep =
   | "interests";
 
 export default function SignUpForm() {
-  const [currentStep, setCurrentStep] = useState<SignUpStep>("phone");
+  const [currentStep, setCurrentStep] = useState<SignUpStep>("location");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
 
   return (

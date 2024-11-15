@@ -1,10 +1,22 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["dapi.kakao.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "dapi.kakao.com",
+      },
+    ],
   },
-  env: {
-    KAKAO_MAP_APP_KEY: process.env.NEXT_PUBLIC_KAKAO_MAP_APP_KEY,
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /react-kakao-maps-sdk/,
+      use: "null-loader",
+    });
+    return config;
+  },
+  experimental: {
+    missingSuspenseWithCSRError: false,
   },
 };
 

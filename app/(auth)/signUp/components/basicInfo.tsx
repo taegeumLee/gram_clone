@@ -103,7 +103,7 @@ export default function BasicInfo({ onNext }: { onNext: () => void }) {
                 : "text-purple-400"
             }`}
           >
-            트랜스젠더
+            둘 다 아님
           </span>
         </button>
       </div>
