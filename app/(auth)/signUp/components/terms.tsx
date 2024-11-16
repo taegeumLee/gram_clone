@@ -43,11 +43,8 @@ export default function Terms({ onNext }: { onNext: () => void }) {
   const handleCheckAll = () => {
     setAgreements((prev) => {
       const newValue = !isAllChecked;
-      return (
-        Object.keys(prev).reduce(
-          (acc, key) => ({ ...acc, [key]: newValue }),
-          {}
-        ),
+      return Object.keys(prev).reduce(
+        (acc, key) => ({ ...acc, [key]: newValue }),
         {} as typeof prev
       );
     });

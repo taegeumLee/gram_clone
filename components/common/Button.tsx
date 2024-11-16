@@ -27,7 +27,7 @@ export default function Button({
   };
 
   const fixedStyles = isFixed
-    ? "fixed bottom-0 left-1/2 -translate-x-1/2 mb-6 w-[calc(100%-2rem)] max-w-screen-md shadow-sm"
+    ? "fixed bottom-0 left-1/2 -translate-x-1/2 mb-2 w-[calc(100%-2rem)] max-w-screen-md shadow-sm px-4"
     : "";
 
   return (

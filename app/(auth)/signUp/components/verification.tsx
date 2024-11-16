@@ -79,7 +79,11 @@ export default function Verification({
               maxLength={1}
               className={`w-14 h-14 text-center text-2xl font-bold rounded-2xl
                 transition-all duration-200 focus:outline-none text-gray-800
-                border-2 border-gray-200 hover:border-sky-300`}
+                border-2 ${
+                  digit === ""
+                    ? "border-gray-200 hover:border-sky-300"
+                    : "border-sky-500 text-gray-800"
+                }`}
             />
           ))}
         </div>

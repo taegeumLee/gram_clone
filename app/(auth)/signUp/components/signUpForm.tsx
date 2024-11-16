@@ -18,6 +18,7 @@ const Job = dynamic(() => import("./job"), { ssr: false });
 const Religion = dynamic(() => import("./religion"), { ssr: false });
 const Preferences = dynamic(() => import("./preferences"), { ssr: false });
 const Interests = dynamic(() => import("./interests"), { ssr: false });
+const Feature = dynamic(() => import("./feature"), { ssr: false });
 type SignUpStep =
   | "phone"
   | "verification"
@@ -33,6 +34,7 @@ type SignUpStep =
   | "smoking"
   | "photos"
   | "preferences"
+  | "feature"
   | "interests";
 
 const STEP_SEQUENCE: Record<SignUpStep, SignUpStep> = {
@@ -49,8 +51,9 @@ const STEP_SEQUENCE: Record<SignUpStep, SignUpStep> = {
   alcohol: "smoking",
   smoking: "photos",
   photos: "preferences",
-  preferences: "interests",
-  interests: "phone", // 마지막 단계 처리
+  preferences: "feature",
+  feature: "interests",
+  interests: "interests", // 마지막 단계 처리
 };
 
 const STEP_COMPONENTS: Record<SignUpStep, React.ComponentType<any>> = {
@@ -68,11 +71,12 @@ const STEP_COMPONENTS: Record<SignUpStep, React.ComponentType<any>> = {
   smoking: Smoking,
   photos: Photos,
   preferences: Preferences,
+  feature: Feature,
   interests: Interests,
 };
 
 export default function SignUpForm() {
-  const [currentStep, setCurrentStep] = useState<SignUpStep>("job");
+  const [currentStep, setCurrentStep] = useState<SignUpStep>("phone");
   const [phoneNumber, setPhoneNumber] = useState<string>("");
 
   const handleNext = (data?: any) => {
