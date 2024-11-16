@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Layout from "@/components/common/Layout";
+import Header from "@/components/common/Header";
+import Button from "@/components/common/Button";
 
 export default function Terms({ onNext }: { onNext: () => void }) {
   const termsList = [
@@ -32,14 +35,7 @@ export default function Terms({ onNext }: { onNext: () => void }) {
 
   const isAllRequiredChecked = Object.entries(agreements).every(
     ([key, value]) => {
-      const item = [
-        { id: "service", required: true },
-        { id: "privacy", required: true },
-        { id: "age", required: true },
-        { id: "marketing", required: false },
-        { id: "notification", required: false },
-      ].find((item) => item.id === key);
-
+      const item = termsList.find((item) => item.id === key);
       return item?.required ? value : true;
     }
   );
@@ -47,18 +43,18 @@ export default function Terms({ onNext }: { onNext: () => void }) {
   const handleCheckAll = () => {
     setAgreements((prev) => {
       const newValue = !isAllChecked;
-      return {
-        service: newValue,
-        privacy: newValue,
-        age: newValue,
-        marketing: newValue,
-        notification: newValue,
-      };
+      return (
+        Object.keys(prev).reduce(
+          (acc, key) => ({ ...acc, [key]: newValue }),
+          {}
+        ),
+        {} as typeof prev
+      );
     });
   };
 
   return (
-    <div className="flex flex-col min-h-screen justify-between w-full p-6 bg-white">
+    <Layout>
       <div className="flex items-center mb-6">
         <Link href="/">
           <button className="text-5xl hover:text-black transition-colors text-gray-500">
@@ -67,66 +63,50 @@ export default function Terms({ onNext }: { onNext: () => void }) {
         </Link>
       </div>
 
-      <div className="flex-1">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">
-          이용약관에 동의해주세요
-        </h1>
+      <Header title="이용약관에 동의해주세요" />
 
-        <div className="space-y-4">
-          <label className="flex items-center justify-between gap-3">
-            <span className="text-lg font-semibold text-gray-800">
-              전체 동의
+      <div className="flex-1 space-y-4">
+        <label className="flex items-center justify-between gap-3">
+          <span className="text-lg font-semibold text-gray-800">전체 동의</span>
+          <input
+            type="checkbox"
+            checked={isAllChecked}
+            onChange={handleCheckAll}
+            className="w-6 h-6 accent-white bg-white hover:bg-white"
+          />
+        </label>
+
+        <div className="h-px bg-gray-200 my-4" />
+
+        {termsList.map((item) => (
+          <label
+            key={item.id}
+            className="flex items-center justify-between gap-3"
+          >
+            <span className="text-gray-800">
+              {item.label}
+              {item.required && (
+                <span className="text-sm text-gray-400 ml-1">필수</span>
+              )}
             </span>
             <input
               type="checkbox"
-              checked={isAllChecked}
-              onChange={handleCheckAll}
-              className="w-6 h-6 accent-white bg-white hover:bg-white"
+              checked={agreements[item.id as keyof typeof agreements]}
+              onChange={(e) =>
+                setAgreements((prev) => ({
+                  ...prev,
+                  [item.id]: e.target.checked,
+                }))
+              }
+              className="w-5 h-5 accent-white bg-white hover:bg-white"
             />
           </label>
-
-          <div className="h-px bg-gray-200 my-4" />
-
-          {termsList.map((item) => (
-            <label
-              key={item.id}
-              className="flex items-center justify-between gap-3"
-            >
-              <span className="text-gray-800">
-                {item.label}
-                {item.required && (
-                  <span className="text-sm text-gray-400 ml-1">필수</span>
-                )}
-              </span>
-              <input
-                type="checkbox"
-                checked={agreements[item.id as keyof typeof agreements]}
-                onChange={(e) =>
-                  setAgreements((prev) => ({
-                    ...prev,
-                    [item.id]: e.target.checked,
-                  }))
-                }
-                className="w-5 h-5 accent-white bg-white hover:bg-white"
-              />
-            </label>
-          ))}
-        </div>
+        ))}
       </div>
 
-      <button
-        onClick={onNext}
-        disabled={!isAllRequiredChecked}
-        className={`w-full p-4 font-medium rounded-xl shadow-sm transition-all duration-200
-          ${
-            isAllRequiredChecked
-              ? "bg-sky-500 text-white hover:bg-sky-600 hover:-translate-y-0.5"
-              : "bg-gray-200 text-gray-500 cursor-not-allowed"
-          }
-        `}
-      >
+      <Button onClick={onNext} disabled={!isAllRequiredChecked} isFixed>
         동의하기
-      </button>
-    </div>
+      </Button>
+    </Layout>
   );
 }

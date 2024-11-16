@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import Layout from "@/components/common/Layout";
+import Header from "@/components/common/Header";
+import Button from "@/components/common/Button";
 
 interface VerificationProps {
   phoneNumber: string;
@@ -52,20 +54,13 @@ export default function Verification({
     }
   };
 
+  const isComplete = verificationCode.every((digit) => digit !== "");
+
   return (
-    <div className="flex flex-col min-h-screen justify-between w-full p-6 bg-white">
-      {/* 헤더 */}
+    <Layout>
+      <Header title={phoneNumber} subtitle="전송된 인증번호를 입력해주세요" />
 
-      {/* 메인 콘텐츠 */}
       <div className="flex-1 flex flex-col items-center justify-center -mt-20">
-        <h1 className="text-3xl font-bold mb-2 tracking-tight text-gray-800">
-          {phoneNumber}
-        </h1>
-        <p className="text-gray-500 text-md mb-8">
-          전송된 인증번호를 입력해주세요
-        </p>
-
-        {/* 6개의 인증번호 입력 칸 */}
         <div className="flex gap-3 w-full justify-center mb-8">
           {verificationCode.map((digit, index) => (
             <input
@@ -82,30 +77,17 @@ export default function Verification({
                 }
               }}
               maxLength={1}
-              className={`w-14 h-14 text-center text-2xl font-semibold border-2 rounded-xl
-                shadow-sm transition-all duration-200
-                focus:border-sky-500 focus:ring-2 focus:ring-sky-200 focus:outline-none text-gray-800
-                ${
-                  digit !== ""
-                    ? "bg-white border-gray-300"
-                    : "bg-gray-50 border-gray-200"
-                }
-                hover:border-sky-300`}
+              className={`w-14 h-14 text-center text-2xl font-bold rounded-2xl
+                transition-all duration-200 focus:outline-none text-gray-800
+                border-2 border-gray-200 hover:border-sky-300`}
             />
           ))}
         </div>
       </div>
 
-      {/* 하단 버튼 */}
-      <button
-        onClick={onNext}
-        className="w-full p-4 font-medium bg-gray-200 text-gray-800  hover:text-white rounded-xl shadow-sm hover:bg-sky-500
-          transition-all duration-200
-          hover:shadow-md hover:-translate-y-0.5
-          focus:outline-none focus:ring-2 focus:ring-sky-300"
-      >
+      <Button onClick={onNext} disabled={!isComplete} isFixed>
         인증하기
-      </button>
-    </div>
+      </Button>
+    </Layout>
   );
 }

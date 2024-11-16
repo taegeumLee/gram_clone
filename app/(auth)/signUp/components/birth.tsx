@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Layout from "@/components/common/Layout";
+import Header from "@/components/common/Header";
+import Button from "@/components/common/Button";
 
 interface BirthProps {
   onNext: () => void;
@@ -39,15 +42,13 @@ export default function Birth({ onNext }: BirthProps) {
   };
 
   return (
-    <div className="flex flex-col min-h-screen justify-between w-full p-6 bg-white">
-      <div className="flex-1">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">
-          생일을 알려주세요
-        </h1>
-        <p className="text-gray-500 text-sm mb-8">
-          변경이 어려우니 신중히 입력해주세요
-        </p>
+    <Layout>
+      <Header
+        title="생일을 알려주세요"
+        subtitle="변경이 어려우니 신중히 입력해주세요"
+      />
 
+      <div className="flex-1">
         <div className="flex gap-4 mb-8">
           {/* 연도 입력 */}
           <div className="flex-1">
@@ -63,7 +64,9 @@ export default function Birth({ onNext }: BirthProps) {
               }}
               placeholder="2000"
               maxLength={4}
-              className="w-full text-2xl font-bold p-3 border-b-2 border-gray-200 focus:border-sky-500 outline-none text-center text-gray-800"
+              className="w-full text-2xl font-bold p-3 border-b-2 border-gray-200
+                focus:border-sky-500 outline-none text-center text-gray-800
+                transition-all duration-200 hover:border-sky-300"
             />
             <p className="text-center text-gray-500 mt-2">년</p>
           </div>
@@ -91,7 +94,9 @@ export default function Birth({ onNext }: BirthProps) {
               }}
               placeholder="11"
               maxLength={2}
-              className="w-full text-2xl font-bold p-3 border-b-2 border-gray-200 focus:border-sky-500 outline-none text-center text-gray-800"
+              className="w-full text-2xl font-bold p-3 border-b-2 border-gray-200
+                focus:border-sky-500 outline-none text-center text-gray-800
+                transition-all duration-200 hover:border-sky-300"
             />
             <p className="text-center text-gray-500 mt-2">월</p>
           </div>
@@ -115,26 +120,18 @@ export default function Birth({ onNext }: BirthProps) {
               }}
               placeholder="21"
               maxLength={2}
-              className="w-full text-2xl font-bold p-3 border-b-2 border-gray-200 focus:border-sky-500 outline-none text-center text-gray-800"
+              className="w-full text-2xl font-bold p-3 border-b-2 border-gray-200
+                focus:border-sky-500 outline-none text-center text-gray-800
+                transition-all duration-200 hover:border-sky-300"
             />
             <p className="text-center text-gray-500 mt-2">일</p>
           </div>
         </div>
       </div>
 
-      <button
-        onClick={handleNext}
-        disabled={!isValidDate()}
-        className={`w-full p-4 font-medium rounded-xl shadow-sm transition-all duration-200
-          ${
-            isValidDate()
-              ? "bg-sky-500 text-white hover:bg-sky-600 hover:-translate-y-0.5"
-              : "bg-gray-200 text-gray-500 cursor-not-allowed"
-          }
-        `}
-      >
+      <Button onClick={handleNext} disabled={!isValidDate()} isFixed>
         다음
-      </button>
-    </div>
+      </Button>
+    </Layout>
   );
 }

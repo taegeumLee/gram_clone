@@ -4,4 +4,5 @@ export const pacifico = Pacifico({
   subsets: ["latin"],
   variable: "--font-pacifico",
   weight: "400",
+  display: "swap",
 });
