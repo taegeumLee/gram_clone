@@ -6,7 +6,7 @@ import Header from "@/components/common/Header";
 import Button from "@/components/common/Button";
 
 interface FeatureProps {
-  onNext: () => void;
+  onNext: (data: { features: string[] }) => void;
 }
 
 export default function Feature({ onNext }: FeatureProps) {
@@ -132,14 +132,14 @@ export default function Feature({ onNext }: FeatureProps) {
 
       <div className="fixed bottom-0 left-0 right-0 p-4 flex flex-col gap-2 bg-white">
         <Button
-          onClick={onNext}
+          onClick={() => onNext({ features: selectedFeatures })}
           disabled={selectedFeatures.length === 0}
           isFixed
         >
           다음
         </Button>
         <button
-          onClick={onNext}
+          onClick={() => onNext({ features: [] })}
           className="w-full py-2 text-gray-500 text-sm hover:text-gray-700"
         >
           건너뛰기

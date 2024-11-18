@@ -7,6 +7,7 @@ import Physical from "./physical";
 import Alcohol from "./alcohol";
 import Smoking from "./smoking";
 import Photos from "./photos";
+import { useRouter } from "next/navigation";
 const Phone = dynamic(() => import("./phone"), { ssr: false });
 const Verification = dynamic(() => import("./verification"), { ssr: false });
 const Terms = dynamic(() => import("./terms"), { ssr: false });
@@ -75,15 +76,119 @@ const STEP_COMPONENTS: Record<SignUpStep, React.ComponentType<any>> = {
   interests: Interests,
 };
 
+interface SignUpData {
+  phoneNumber: string;
+  gender: string;
+  birthDate: Date | null;
+  location: Location | null;
+  height: number;
+  education?: string;
+  job?: string;
+  religion?: string;
+  drinking?: string;
+  smoking?: string;
+  photos: string[];
+  preferences?: string;
+  interests?: string[];
+  features?: string[];
+}
+
+interface Location {
+  latitude: number;
+  longitude: number;
+}
+
 export default function SignUpForm() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<SignUpStep>("phone");
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [signUpData, setSignUpData] = useState<SignUpData>({
+    phoneNumber: "",
+    gender: "",
+    birthDate: null,
+    location: null,
+    height: 0,
+    photos: [],
+    interests: [],
+    features: [],
+    preferences: "",
+    education: "",
+    job: "",
+    religion: "",
+    drinking: "",
+    smoking: "",
+  });
 
   const handleNext = (data?: any) => {
-    if (currentStep === "phone" && data) {
-      setPhoneNumber(data);
+    if (!data) {
+      setCurrentStep(STEP_SEQUENCE[currentStep]);
+      return;
     }
+
+    setSignUpData((prev) => ({
+      ...prev,
+      ...data,
+    }));
+
+    if (currentStep === "interests") {
+      handleSignUp();
+      return;
+    }
+
     setCurrentStep(STEP_SEQUENCE[currentStep]);
+  };
+
+  const handleSignUp = async () => {
+    try {
+      const locationData = signUpData.location
+        ? {
+            latitude: signUpData.location.latitude,
+            longitude: signUpData.location.longitude,
+          }
+        : null;
+
+      const sanitizedData = {
+        phoneNumber: signUpData.phoneNumber,
+        gender: signUpData.gender,
+        birthDate: signUpData.birthDate?.toISOString(),
+        location: locationData
+          ? `${locationData.latitude},${locationData.longitude}`
+          : null,
+        height: signUpData.height,
+        education: signUpData.education || null,
+        job: signUpData.job || null,
+        religion: signUpData.religion || null,
+        drinking: signUpData.drinking || null,
+        smoking: signUpData.smoking || null,
+        photos: signUpData.photos,
+        preferences:
+          typeof signUpData.preferences === "string"
+            ? signUpData.preferences
+            : JSON.stringify(signUpData.preferences),
+        interests: Array.isArray(signUpData.interests)
+          ? JSON.stringify(signUpData.interests)
+          : null,
+        features: Array.isArray(signUpData.features)
+          ? JSON.stringify(signUpData.features)
+          : null,
+      };
+
+      const response = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(sanitizedData),
+      });
+
+      if (!response.ok) {
+        throw new Error("회원가입에 실패했습니다.");
+      }
+
+      router.push("/home");
+    } catch (error) {
+      console.error("회원가입 에러:", error);
+      alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+    }
   };
 
   const CurrentStepComponent = STEP_COMPONENTS[currentStep];
@@ -94,7 +199,9 @@ export default function SignUpForm() {
         <CurrentStepComponent
           key={currentStep}
           onNext={handleNext}
-          phoneNumber={currentStep === "verification" ? phoneNumber : undefined}
+          phoneNumber={
+            currentStep === "verification" ? signUpData.phoneNumber : undefined
+          }
         />
       </AnimatePresence>
     </div>

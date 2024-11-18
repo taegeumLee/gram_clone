@@ -6,7 +6,7 @@ import Header from "@/components/common/Header";
 import Button from "@/components/common/Button";
 
 interface InterestsProps {
-  onNext: () => void;
+  onNext: (data: { interests: string[] }) => void;
 }
 
 export default function Interests({ onNext }: InterestsProps) {
@@ -113,7 +113,7 @@ export default function Interests({ onNext }: InterestsProps) {
       </div>
 
       <Button
-        onClick={onNext}
+        onClick={() => onNext({ interests: selectedInterests })}
         disabled={selectedInterests.length === 0}
         isFixed
       >

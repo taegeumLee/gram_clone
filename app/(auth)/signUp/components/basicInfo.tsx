@@ -12,14 +12,18 @@ import Layout from "@/components/common/Layout";
 import Header from "@/components/common/Header";
 import Button from "@/components/common/Button";
 
-export default function BasicInfo({ onNext }: { onNext: () => void }) {
+export default function BasicInfo({
+  onNext,
+}: {
+  onNext: (data: { gender: string }) => void;
+}) {
   const [selectedGender, setSelectedGender] = useState<
     "male" | "female" | "transgender" | null
   >(null);
 
-  const handleNext = () => {
-    if (selectedGender) {
-      onNext();
+  const handleNext = (gender: "male" | "female" | "transgender" | null) => {
+    if (gender) {
+      onNext({ gender: gender });
     }
   };
 
@@ -110,7 +114,10 @@ export default function BasicInfo({ onNext }: { onNext: () => void }) {
       </div>
 
       {/* 다음 버튼 */}
-      <Button onClick={handleNext} disabled={!selectedGender}>
+      <Button
+        onClick={() => handleNext(selectedGender)}
+        disabled={!selectedGender}
+      >
         다음
       </Button>
     </Layout>

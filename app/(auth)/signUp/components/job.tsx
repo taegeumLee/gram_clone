@@ -5,12 +5,12 @@ import Layout from "@/components/common/Layout";
 import Header from "@/components/common/Header";
 import Button from "@/components/common/Button";
 
-interface JobProps {
-  onNext: () => void;
-}
-
-export default function Job({ onNext }: JobProps) {
-  const [selectedJob, setSelectedJob] = useState<string | null>(null);
+export default function Job({
+  onNext,
+}: {
+  onNext: (data: { job: string }) => void;
+}) {
+  const [selectedJob, setSelectedJob] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState("");
 
   const jobs = [
@@ -89,7 +89,11 @@ export default function Job({ onNext }: JobProps) {
         </div>
       </div>
 
-      <Button onClick={onNext} disabled={!selectedJob} isFixed>
+      <Button
+        onClick={() => onNext({ job: selectedJob })}
+        disabled={!selectedJob}
+        isFixed
+      >
         다음
       </Button>
     </Layout>
