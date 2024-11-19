@@ -25,25 +25,69 @@ model User {
   religion    String?
   drinking    String?
   smoking     String?
-  photos      Photo[]
-  preferences String?
-  interests   String?
-  features    String?
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  isActive   Boolean  @default(true)
-  isVerified Boolean  @default(false)
-  lastActive DateTime @default(now())
+  // 관계 정의
+  photos       Photo[]
+  interests    Interest[]
+  features     Feature[]
+  preferences  Preference @relation(fields: [preferenceId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  isActive     Boolean    @default(true)
+  isVerified   Boolean    @default(false)
+  lastActive   DateTime   @default(now())
+  preferenceId String
 
   @@map("users")
 }
 
 model Photo {
-  id     String @id @default(uuid())
-  url    String
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  url       String
+  order     Int
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
 
+  @@unique([userId, order])
   @@map("photos")
+}
+
+model Interest {
+  id        String   @id @default(uuid())
+  name      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, name])
+  @@map("interests")
+}
+
+model Feature {
+  id        String   @id @default(uuid())
+  name      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, name])
+  @@map("features")
+}
+
+model Preference {
+  id             String @id @default(uuid())
+  gender         String
+  ageRangeMin    Int
+  ageRangeMax    Int
+  location       String
+  distance       Int
+  heightRangeMin Int
+  heightRangeMax Int
+  religion       String
+  drinking       String
+  smoking        String
+  user           User[]
+
+  @@map("user_preferences")
 }

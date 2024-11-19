@@ -80,7 +80,7 @@ interface SignUpData {
   phoneNumber: string;
   gender: string;
   birthDate: Date | null;
-  location: Location | null;
+  location: string;
   height: number;
   education?: string;
   job?: string;
@@ -88,9 +88,20 @@ interface SignUpData {
   drinking?: string;
   smoking?: string;
   photos: string[];
-  preferences?: string;
-  interests?: string[];
-  features?: string[];
+  preferences: {
+    gender: string;
+    ageRangeMin: number;
+    ageRangeMax: number;
+    location: string;
+    distance: number;
+    heightRangeMin: number;
+    heightRangeMax: number;
+    religion: string;
+    drinking: string;
+    smoking: string;
+  };
+  interests: string[];
+  features: string[];
 }
 
 interface Location {
@@ -105,12 +116,23 @@ export default function SignUpForm() {
     phoneNumber: "",
     gender: "",
     birthDate: null,
-    location: null,
+    location: "",
     height: 0,
     photos: [],
     interests: [],
     features: [],
-    preferences: "",
+    preferences: {
+      gender: "",
+      ageRangeMin: 0,
+      ageRangeMax: 0,
+      location: "",
+      distance: 0,
+      heightRangeMin: 0,
+      heightRangeMax: 0,
+      religion: "",
+      drinking: "",
+      smoking: "",
+    },
     education: "",
     job: "",
     religion: "",
@@ -139,37 +161,35 @@ export default function SignUpForm() {
 
   const handleSignUp = async () => {
     try {
-      const locationData = signUpData.location
-        ? {
-            latitude: signUpData.location.latitude,
-            longitude: signUpData.location.longitude,
-          }
-        : null;
-
       const sanitizedData = {
         phoneNumber: signUpData.phoneNumber,
         gender: signUpData.gender,
         birthDate: signUpData.birthDate?.toISOString(),
-        location: locationData
-          ? `${locationData.latitude},${locationData.longitude}`
-          : null,
+        location: signUpData.location,
         height: signUpData.height,
         education: signUpData.education || null,
         job: signUpData.job || null,
         religion: signUpData.religion || null,
         drinking: signUpData.drinking || null,
         smoking: signUpData.smoking || null,
-        photos: signUpData.photos,
-        preferences:
-          typeof signUpData.preferences === "string"
-            ? signUpData.preferences
-            : JSON.stringify(signUpData.preferences),
-        interests: Array.isArray(signUpData.interests)
-          ? JSON.stringify(signUpData.interests)
-          : null,
-        features: Array.isArray(signUpData.features)
-          ? JSON.stringify(signUpData.features)
-          : null,
+        photos: signUpData.photos.map((url, index) => ({
+          url,
+          order: index,
+        })),
+        preferences: {
+          gender: signUpData.preferences.gender,
+          ageRangeMin: signUpData.preferences.ageRangeMin,
+          ageRangeMax: signUpData.preferences.ageRangeMax,
+          location: signUpData.preferences.location,
+          distance: signUpData.preferences.distance,
+          heightRangeMin: signUpData.preferences.heightRangeMin,
+          heightRangeMax: signUpData.preferences.heightRangeMax,
+          religion: signUpData.preferences.religion,
+          drinking: signUpData.preferences.drinking,
+          smoking: signUpData.preferences.smoking,
+        },
+        interests: signUpData.interests,
+        features: signUpData.features,
       };
 
       const response = await fetch("/api/auth/signup", {

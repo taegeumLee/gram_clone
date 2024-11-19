@@ -11,7 +11,8 @@ export async function POST(request: Request) {
       !data.gender ||
       !data.birthDate ||
       !data.location ||
-      !data.height
+      !data.height ||
+      !data.preferences
     ) {
       return NextResponse.json(
         { error: "필수 정보가 누락되었습니다." },
@@ -32,21 +33,41 @@ export async function POST(request: Request) {
         religion: data.religion,
         drinking: data.drinking,
         smoking: data.smoking,
-        preferences: data.preferences ? JSON.stringify(data.preferences) : null,
-        interests: data.interests ? JSON.stringify(data.interests) : null,
-        features: data.features ? JSON.stringify(data.features) : null,
         photos: {
-          create: data.photos.map((url: string) => ({
-            url,
+          create: data.photos.map((photo: { url: string; order: number }) => ({
+            url: photo.url,
+            order: photo.order,
           })),
+        },
+        interests: {
+          create: data.interests.map((name: string) => ({
+            name,
+          })),
+        },
+        features: {
+          create: data.features.map((name: string) => ({
+            name,
+          })),
+        },
+        preferences: {
+          create: {
+            gender: data.preferences.gender,
+            ageRangeMin: data.preferences.ageRangeMin,
+            ageRangeMax: data.preferences.ageRangeMax,
+            location: data.preferences.location,
+            distance: data.preferences.distance,
+            heightRangeMin: data.preferences.heightRangeMin,
+            heightRangeMax: data.preferences.heightRangeMax,
+            religion: data.preferences.religion,
+            drinking: data.preferences.drinking,
+            smoking: data.preferences.smoking,
+          },
         },
       },
     });
 
-    // 세션 생성 및 쿠키 설정
     const response = NextResponse.json({ user }, { status: 201 });
 
-    // 세션 쿠키 설정
     response.cookies.set({
       name: "session",
       value: user.id,

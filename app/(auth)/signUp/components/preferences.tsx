@@ -12,10 +12,12 @@ interface PreferencesProps {
 // preferences 타입 정의 추가
 interface PreferencesState {
   gender: string;
-  ageRange: [number, number];
+  ageRangeMin: number;
+  ageRangeMax: number;
   location: string;
   distance: number;
-  heightRange: [number, number];
+  heightRangeMin: number;
+  heightRangeMax: number;
   religion: string;
   drinking: string;
   smoking: string;
@@ -24,10 +26,12 @@ interface PreferencesState {
 export default function Preferences({ onNext }: PreferencesProps) {
   const [preferences, setPreferences] = useState<PreferencesState>({
     gender: "",
-    ageRange: [19, 24],
+    ageRangeMin: 19,
+    ageRangeMax: 24,
     location: "인천 미추홀구",
     distance: 20,
-    heightRange: [151, 170],
+    heightRangeMin: 151,
+    heightRangeMax: 170,
     religion: "선택 안 함",
     drinking: "선택 안 함",
     smoking: "선택 안 함",
@@ -99,10 +103,10 @@ export default function Preferences({ onNext }: PreferencesProps) {
                   className="absolute h-1 bg-sky-500"
                   style={{
                     left: `${
-                      ((preferences.ageRange[0] - 19) / (50 - 19)) * 100
+                      ((preferences.ageRangeMin - 19) / (50 - 19)) * 100
                     }%`,
                     right: `${
-                      100 - ((preferences.ageRange[1] - 19) / (50 - 19)) * 100
+                      100 - ((preferences.ageRangeMax - 19) / (50 - 19)) * 100
                     }%`,
                   }}
                 />
@@ -111,13 +115,13 @@ export default function Preferences({ onNext }: PreferencesProps) {
                 type="range"
                 min={19}
                 max={50}
-                value={preferences.ageRange[0]}
+                value={preferences.ageRangeMin}
                 onChange={(e) =>
                   setPreferences((prev) => ({
                     ...prev,
                     ageRange: [
                       parseInt(e.target.value),
-                      Math.max(parseInt(e.target.value), prev.ageRange[1]),
+                      Math.max(parseInt(e.target.value), prev.ageRangeMax),
                     ],
                   }))
                 }
@@ -127,12 +131,12 @@ export default function Preferences({ onNext }: PreferencesProps) {
                 type="range"
                 min={19}
                 max={50}
-                value={preferences.ageRange[1]}
+                value={preferences.ageRangeMax}
                 onChange={(e) =>
                   setPreferences((prev) => ({
                     ...prev,
                     ageRange: [
-                      Math.min(prev.ageRange[0], parseInt(e.target.value)),
+                      Math.min(prev.ageRangeMin, parseInt(e.target.value)),
                       parseInt(e.target.value),
                     ],
                   }))
@@ -142,7 +146,7 @@ export default function Preferences({ onNext }: PreferencesProps) {
             </div>
           </div>
           <span className="text-gray-800 w-24 text-right">
-            {preferences.ageRange[0]}세 ~ {preferences.ageRange[1]}세
+            {preferences.ageRangeMin}세 ~ {preferences.ageRangeMax}세
           </span>
         </div>
 
@@ -198,11 +202,11 @@ export default function Preferences({ onNext }: PreferencesProps) {
                   className="absolute h-1 bg-sky-500"
                   style={{
                     left: `${
-                      ((preferences.heightRange[0] - 140) / (200 - 140)) * 100
+                      ((preferences.heightRangeMin - 140) / (200 - 140)) * 100
                     }%`,
                     right: `${
                       100 -
-                      ((preferences.heightRange[1] - 140) / (200 - 140)) * 100
+                      ((preferences.heightRangeMax - 140) / (200 - 140)) * 100
                     }%`,
                   }}
                 />
@@ -211,13 +215,13 @@ export default function Preferences({ onNext }: PreferencesProps) {
                 type="range"
                 min={140}
                 max={200}
-                value={preferences.heightRange[0]}
+                value={preferences.heightRangeMin}
                 onChange={(e) =>
                   setPreferences((prev) => ({
                     ...prev,
                     heightRange: [
                       parseInt(e.target.value),
-                      Math.max(parseInt(e.target.value), prev.heightRange[1]),
+                      Math.max(parseInt(e.target.value), prev.heightRangeMax),
                     ],
                   }))
                 }
@@ -227,12 +231,12 @@ export default function Preferences({ onNext }: PreferencesProps) {
                 type="range"
                 min={140}
                 max={200}
-                value={preferences.heightRange[1]}
+                value={preferences.heightRangeMax}
                 onChange={(e) =>
                   setPreferences((prev) => ({
                     ...prev,
                     heightRange: [
-                      Math.min(prev.heightRange[0], parseInt(e.target.value)),
+                      Math.min(prev.heightRangeMin, parseInt(e.target.value)),
                       parseInt(e.target.value),
                     ],
                   }))
@@ -242,7 +246,7 @@ export default function Preferences({ onNext }: PreferencesProps) {
             </div>
           </div>
           <span className="text-gray-800 w-24 text-right">
-            {preferences.heightRange[0]}cm ~ {preferences.heightRange[1]}cm
+            {preferences.heightRangeMin}cm ~ {preferences.heightRangeMax}cm
           </span>
         </div>
 
