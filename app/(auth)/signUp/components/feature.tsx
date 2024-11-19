@@ -1,61 +1,34 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/common/Layout";
 import Header from "@/components/common/Header";
 import Button from "@/components/common/Button";
+import db from "@/lib/db";
 
 interface FeatureProps {
   onNext: (data: { features: string[] }) => void;
 }
 
+interface Feature {
+  id: string;
+  name: string;
+  userId: string | null;
+  createdAt: Date;
+}
+
+async function getFeatures() {
+  return await db.feature.findMany();
+}
+
 export default function Feature({ onNext }: FeatureProps) {
   const [selectedFeatures, setSelectedFeatures] = useState<string[]>([]);
   const [customFeature, setCustomFeature] = useState("");
-  const [features, setFeatures] = useState([
-    { emoji: "🍜", text: "요리를 잘해요" },
-    { emoji: "👖", text: "패션 센스가 좋아요" },
-    { emoji: "😊", text: "유머 감각이 있어요" },
-    { emoji: "📚", text: "다독가에요" },
-    { emoji: "😌", text: "다정해요" },
-    { emoji: "🎭", text: "엉덩이가 예뻐요" },
-    { emoji: "💬", text: "대화를 잘해요" },
-    { emoji: "😏", text: "꼬부기 미인" },
-    { emoji: "👋", text: "손이 예뻐요" },
-    { emoji: "😍", text: "잘생겼어요" },
-    { emoji: "😊", text: "웃는게 예뻐요" },
-    { emoji: "🗣️", text: "목소리가 좋아요" },
-    { emoji: "👀", text: "쌍꺼풀 있는눈" },
-    { emoji: "🔍", text: "보조개" },
-    { emoji: "💡", text: "이야기를 잘 들어줘요" },
-    { emoji: "🎵", text: "노래를 잘해요" },
-    { emoji: "", text: "비율이 좋아요" },
-    { emoji: "😘", text: "애교가 많아요" },
-    { emoji: "🎨", text: "그림을 잘 그려요" },
-    { emoji: "🏃", text: "운동을 좋아해요" },
-    { emoji: "🧠", text: "지적호기심이 많아요" },
-    { emoji: "🌱", text: "자기 계발을 좋아해요" },
-    { emoji: "🤝", text: "신뢰할 수 있어요" },
-    { emoji: "⭐", text: "긍정적이에요" },
-    { emoji: "🎮", text: "게임을 잘해요" },
-    { emoji: "📸", text: "사진 찍는걸 좋아해요" },
-    { emoji: "🌟", text: "카리스마 있어요" },
-    { emoji: "🎯", text: "목표지향적이에요" },
-    { emoji: "🤔", text: "생각이 깊어요" },
-    { emoji: "👨‍🍳", text: "요리하는걸 좋아해요" },
-    { emoji: "🎧", text: "음악을 좋아해요" },
-    { emoji: "✈️", text: "여행을 좋아해요" },
-    { emoji: "🐱", text: "동물을 좋아해요" },
-    { emoji: "🌈", text: "창의적이에요" },
-    { emoji: "💪", text: "의지가 강해요" },
-    { emoji: "🤗", text: "포용력이 있어요" },
-    { emoji: "🎭", text: "감성적이에요" },
-    { emoji: "📱", text: "트렌디해요" },
-    { emoji: "🌺", text: "피부가 좋아요" },
-    { emoji: "🎪", text: "재능이 많아요" },
-    { emoji: "🎯", text: "집중력이 좋아요" },
-    { emoji: "🤹", text: "멀티태스킹 잘해요" },
-  ]);
+  const [features, setFeatures] = useState<Feature[]>([]);
+
+  useEffect(() => {
+    getFeatures().then((data) => setFeatures(data));
+  }, []);
 
   const toggleFeature = (feature: string) => {
     setSelectedFeatures((prev) => {
@@ -71,7 +44,12 @@ export default function Feature({ onNext }: FeatureProps) {
     e.preventDefault();
     if (customFeature.trim()) {
       setFeatures((prev) => [
-        { emoji: "✨", text: customFeature.trim() },
+        {
+          id: Date.now().toString(),
+          name: "✨" + customFeature.trim(),
+          userId: null,
+          createdAt: new Date(),
+        },
         ...prev,
       ]);
       setCustomFeature("");
@@ -107,20 +85,19 @@ export default function Feature({ onNext }: FeatureProps) {
         </form>
 
         <div className="flex flex-wrap gap-2 mb-6">
-          {features.map(({ emoji, text }) => (
+          {features.map(({ name }: { name: string }) => (
             <button
-              key={text}
-              onClick={() => toggleFeature(text)}
+              key={name}
+              onClick={() => toggleFeature(name)}
               className={`flex items-center gap-1.5 px-4 py-2 rounded-full border
                 transition-all duration-200 text-sm
                 ${
-                  selectedFeatures.includes(text)
+                  selectedFeatures.includes(name)
                     ? "border-sky-500 bg-sky-500 text-white"
                     : "border-gray-200 text-gray-600 hover:border-gray-300"
                 }`}
             >
-              <span>{emoji}</span>
-              <span>{text}</span>
+              <span>{name}</span>
             </button>
           ))}
         </div>

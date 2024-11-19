@@ -1,9 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Layout from "@/components/common/Layout";
 import Header from "@/components/common/Header";
 import Button from "@/components/common/Button";
+import db from "@/lib/db";
+
+interface Interest {
+  id: string;
+  name: string;
+  userId: string | null;
+  createdAt: Date;
+}
+
+async function getInterests() {
+  return await db.interest.findMany({
+    select: {
+      name: true,
+      id: true,
+      userId: true,
+      createdAt: true,
+    },
+  });
+}
 
 interface InterestsProps {
   onNext: (data: { interests: string[] }) => void;
@@ -12,33 +31,11 @@ interface InterestsProps {
 export default function Interests({ onNext }: InterestsProps) {
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [customInterest, setCustomInterest] = useState("");
+  const [interests, setInterests] = useState<Interest[]>([]);
 
-  const interests = [
-    { emoji: "✈️", text: "여행" },
-    { emoji: "🎮", text: "게임" },
-    { emoji: "📚", text: "독서" },
-    { emoji: "🎵", text: "음악" },
-    { emoji: "🎨", text: "그림" },
-    { emoji: "🏃", text: "운동" },
-    { emoji: "🎬", text: "영화" },
-    { emoji: "📸", text: "사진" },
-    { emoji: "🍳", text: "요리" },
-    { emoji: "🐶", text: "반려동물" },
-    { emoji: "🌱", text: "식물" },
-    { emoji: "✍️", text: "글쓰기" },
-    { emoji: "🎭", text: "공연" },
-    { emoji: "⚽", text: "스포츠" },
-    { emoji: "🎤", text: "노래" },
-    { emoji: "💃", text: "댄스" },
-    { emoji: "🎯", text: "자기계발" },
-    { emoji: "🧘", text: "명상" },
-    { emoji: "🎨", text: "공예" },
-    { emoji: "🏔️", text: "등산" },
-    { emoji: "🚲", text: "자전거" },
-    { emoji: "🎱", text: "당구" },
-    { emoji: "🎳", text: "볼링" },
-    { emoji: "🏊", text: "수영" },
-  ];
+  useEffect(() => {
+    getInterests().then((data) => setInterests(data));
+  }, []);
 
   const toggleInterest = (interest: string) => {
     setSelectedInterests((prev) => {
@@ -53,6 +50,15 @@ export default function Interests({ onNext }: InterestsProps) {
   const addCustomInterest = (e: React.FormEvent) => {
     e.preventDefault();
     if (customInterest.trim() && selectedInterests.length < 5) {
+      setInterests((prev) => [
+        {
+          id: Date.now().toString(),
+          name: customInterest.trim(),
+          userId: null,
+          createdAt: new Date(),
+        },
+        ...prev,
+      ]);
       setSelectedInterests((prev) => [...prev, customInterest.trim()]);
       setCustomInterest("");
     }
@@ -89,24 +95,23 @@ export default function Interests({ onNext }: InterestsProps) {
         </form>
 
         <div className="grid grid-cols-3 gap-2">
-          {interests.map(({ emoji, text }) => (
+          {interests.map(({ name }) => (
             <button
-              key={text}
-              onClick={() => toggleInterest(text)}
+              key={name}
+              onClick={() => toggleInterest(name)}
               className={`p-3 rounded-xl flex flex-col items-center justify-center gap-1
                 border-2 transition-all duration-200
                 ${
-                  selectedInterests.includes(text)
+                  selectedInterests.includes(name)
                     ? "border-sky-500 bg-sky-50 text-sky-500"
                     : "border-gray-200 hover:border-sky-300 text-gray-600"
                 }`}
               disabled={
                 selectedInterests.length >= 5 &&
-                !selectedInterests.includes(text)
+                !selectedInterests.includes(name)
               }
             >
-              <span className="text-2xl">{emoji}</span>
-              <span className="text-sm font-medium">{text}</span>
+              <span className="text-sm font-medium">{name}</span>
             </button>
           ))}
         </div>

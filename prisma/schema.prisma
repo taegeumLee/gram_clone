@@ -20,58 +20,89 @@ model User {
   birthDate   DateTime
   location    String
   height      Int
-  education   String?
-  job         String?
-  religion    String?
-  drinking    String?
-  smoking     String?
+  education   String
+  job         String
+  religion    String
+  drinking    String
+  smoking     String
 
-  // 관계 정의
-  photos       Photo[]
-  interests    Interest[]
-  features     Feature[]
+  // 상태 관련 필드
+  isActive   Boolean  @default(false)
+  isVerified Boolean  @default(false)
+  lastActive DateTime @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // 필수 관계
+  photos       UserPhoto  @relation(fields: [userPhotoId], references: [id])
+  userPhotoId  String
   preferences  Preference @relation(fields: [preferenceId], references: [id], onDelete: Cascade)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-  isActive     Boolean    @default(true)
-  isVerified   Boolean    @default(false)
-  lastActive   DateTime   @default(now())
   preferenceId String
 
+  // 선택적 관계
+  userInterest   UserInterest? @relation(fields: [userInterestId], references: [id])
+  userInterestId String?
+  userFeature    UserFeature?  @relation(fields: [userFeatureId], references: [id])
+  userFeatureId  String?
+
   @@map("users")
+}
+
+model UserPhoto {
+  id     String  @id @default(uuid())
+  users  User[]
+  photos Photo[]
+
+  @@map("user_photos")
 }
 
 model Photo {
   id        String   @id @default(uuid())
   url       String
   order     Int
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
-  @@unique([userId, order])
+  userPhoto   UserPhoto? @relation(fields: [userPhotoId], references: [id])
+  userPhotoId String?
+
   @@map("photos")
+}
+
+model UserInterest {
+  id        String     @id @default(uuid())
+  users     User[]
+  interests Interest[]
+
+  @@map("user_interests")
 }
 
 model Interest {
   id        String   @id @default(uuid())
   name      String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
-  @@unique([userId, name])
+  userInterest   UserInterest? @relation(fields: [userInterestId], references: [id])
+  userInterestId String?
+
   @@map("interests")
+}
+
+model UserFeature {
+  id       String    @id @default(uuid())
+  users    User[]
+  features Feature[]
+
+  @@map("user_features")
 }
 
 model Feature {
   id        String   @id @default(uuid())
   name      String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
-  @@unique([userId, name])
+  userFeature   UserFeature? @relation(fields: [userFeatureId], references: [id])
+  userFeatureId String?
+
   @@map("features")
 }
 
@@ -87,7 +118,8 @@ model Preference {
   religion       String
   drinking       String
   smoking        String
-  user           User[]
 
-  @@map("user_preferences")
+  users User[]
+
+  @@map("preferences")
 }

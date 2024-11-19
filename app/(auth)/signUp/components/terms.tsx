@@ -52,14 +52,6 @@ export default function Terms({ onNext }: { onNext: () => void }) {
 
   return (
     <Layout>
-      <div className="flex items-center mb-6">
-        <Link href="/">
-          <button className="text-5xl hover:text-black transition-colors text-gray-500">
-            ×
-          </button>
-        </Link>
-      </div>
-
       <Header title="이용약관에 동의해주세요" />
 
       <div className="flex-1 space-y-4">
