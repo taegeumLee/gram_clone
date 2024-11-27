@@ -160,6 +160,7 @@ export default function SignUpForm() {
   };
 
   const handleSignUp = async () => {
+    console.log(signUpData);
     try {
       const sanitizedData = {
         phoneNumber: signUpData.phoneNumber,
