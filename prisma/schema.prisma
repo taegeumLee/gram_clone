@@ -20,11 +20,11 @@ model User {
   birthDate   DateTime
   location    String
   height      Int
-  education   String
-  job         String
-  religion    String
-  drinking    String
-  smoking     String
+  education   String?
+  job         String?
+  religion    String?
+  drinking    String?
+  smoking     String?
 
   // 상태 관련 필드
   isActive   Boolean  @default(false)
@@ -33,75 +33,59 @@ model User {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
-  // 필수 관계
-  photos       UserPhoto  @relation(fields: [userPhotoId], references: [id])
-  userPhotoId  String
-  preferences  Preference @relation(fields: [preferenceId], references: [id], onDelete: Cascade)
-  preferenceId String
-
-  // 선택적 관계
-  userInterest   UserInterest? @relation(fields: [userInterestId], references: [id])
-  userInterestId String?
-  userFeature    UserFeature?  @relation(fields: [userFeatureId], references: [id])
-  userFeatureId  String?
-
-  @@map("users")
+  // 관계
+  userPhotos    UserPhoto[]
+  userInterests UserInterest[]
+  userFeatures  UserFeature[]
+  preference    Preference?    @relation(fields: [preferenceId], references: [id])
+  preferenceId  String?
 }
 
 model UserPhoto {
-  id     String  @id @default(uuid())
-  users  User[]
-  photos Photo[]
+  id     String @id @default(uuid())
+  userId String
+  url    String
+  order  Int
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@unique([userId, order])
   @@map("user_photos")
 }
 
-model Photo {
-  id        String   @id @default(uuid())
-  url       String
-  order     Int
-  createdAt DateTime @default(now())
+model UserInterest {
+  id         String   @id @default(cuid())
+  userId     String
+  interest   Interest @relation(fields: [interestId], references: [id])
+  interestId String
+  User       User     @relation(fields: [userId], references: [id])
 
-  userPhoto   UserPhoto? @relation(fields: [userPhotoId], references: [id])
-  userPhotoId String?
-
-  @@map("photos")
+  @@index([userId])
+  @@index([interestId])
 }
 
-model UserInterest {
-  id        String     @id @default(uuid())
-  users     User[]
-  interests Interest[]
+model UserFeature {
+  id        String  @id @default(cuid())
+  userId    String
+  feature   Feature @relation(fields: [featureId], references: [id])
+  featureId String
+  User      User    @relation(fields: [userId], references: [id])
 
-  @@map("user_interests")
+  @@index([userId])
+  @@index([featureId])
 }
 
 model Interest {
-  id        String   @id @default(uuid())
-  name      String
-  createdAt DateTime @default(now())
-
-  userInterest   UserInterest? @relation(fields: [userInterestId], references: [id])
-  userInterestId String?
+  id           String         @id @default(cuid())
+  name         String
+  userInterest UserInterest[]
 
   @@map("interests")
 }
 
-model UserFeature {
-  id       String    @id @default(uuid())
-  users    User[]
-  features Feature[]
-
-  @@map("user_features")
-}
-
 model Feature {
-  id        String   @id @default(uuid())
-  name      String
-  createdAt DateTime @default(now())
-
-  userFeature   UserFeature? @relation(fields: [userFeatureId], references: [id])
-  userFeatureId String?
+  id          String        @id @default(cuid())
+  name        String
+  userFeature UserFeature[]
 
   @@map("features")
 }

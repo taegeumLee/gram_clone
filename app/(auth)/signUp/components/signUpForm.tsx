@@ -8,7 +8,10 @@ import Alcohol from "./alcohol";
 import Smoking from "./smoking";
 import Photos from "./photos";
 import { useRouter } from "next/navigation";
-const Phone = dynamic(() => import("./phone"), { ssr: false });
+const Phone = dynamic(() => import("./phone"), {
+  ssr: false,
+  loading: () => <div>Loading...</div>,
+});
 const Verification = dynamic(() => import("./verification"), { ssr: false });
 const Terms = dynamic(() => import("./terms"), { ssr: false });
 const BasicInfo = dynamic(() => import("./basicInfo"), { ssr: false });

@@ -6,11 +6,11 @@ import Header from "@/components/common/Header";
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
 
-export default function Phone({
-  onNext,
-}: {
+interface PhoneProps {
   onNext: (number: string) => void;
-}) {
+}
+
+const Phone: React.FC<PhoneProps> = ({ onNext }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const autoHyphen = (target: string) => {
@@ -56,4 +56,6 @@ export default function Phone({
       </Button>
     </Layout>
   );
-}
+};
+
+export default Phone;
